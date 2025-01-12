@@ -45,7 +45,7 @@ export default function SearchResults() {
         }
 
         try {
-            const url = "http://localhost:8000/q2?query=" + encodeURIComponent(query);
+            const url = "https://reddit-backend-dle4.onrender.com/q2?query=" + encodeURIComponent(query);
             const response = await fetch(url);
             if(!response.ok) {
                 throw new Error(`HTTP error, status: ${response.status}`);
@@ -77,11 +77,6 @@ export default function SearchResults() {
             <div className="mt-4">
                 {results.length > 0 ? (
                 results.map((result, index) => (
-                    // <section key={index} style={{marginBottom: "20px", textAlign: "left", padding: "20px"}}>
-                    //     <p>{result.sr}</p>
-                    //     <h3 className="text-lg font-bold">{result.title}</h3>
-                    //     <a href={result.link} target="_blank" rel="noopener noreferrer"> Link </a>
-                    // </section>
                     <Result result={result} index={index}/>
                 ))
                 ) : (

@@ -7,13 +7,9 @@ export default function Home() {
       <main className={styles.main}>
         <h1>Search Reddit For Keyword</h1>
         <h3>Created with <a href="https://pullpush.io" target="_blank">pullpush.io</a> API</h3>
+        
         <p style={{color: "red"}}>NSFW results in red</p>
         <p>Some posts may have been deleted by their authors and/or removed</p>
-
-        {/* <section className = "searchSection">
-          <input type = "text" id="searchInput" placeholder="Enter query"/> 
-          <button id="searchButton">Search</button>
-        </section> */}
 
         <SearchResults />
 
