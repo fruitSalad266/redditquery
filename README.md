@@ -1,3 +1,4 @@
+# Search Reddit for Keyword
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
@@ -13,7 +14,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-By default, running with `npm run dev` will still access the [hosted api](https://jstest2.onrender.com) on Render. To test you own local backend, see [jstest2 repo](https://github.com/fruitSalad266/jstest2).
+By default, running with `npm run dev` will still access the [hosted api](https://jstest2.onrender.com) on Render. To test your own local backend, see [jstest2 repo](https://github.com/fruitSalad266/jstest2).
 
 ## Learn More
 This project was created with [pushpull.io](http://api.pushpull.io), a third-party alternative to Reddit API.
