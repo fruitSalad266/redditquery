@@ -1,10 +1,15 @@
 'use client'
 
 import { useState } from "react";
+import { ClipLoader } from "react-spinners";
 
 var domain = "jstest2.onrender.com";
 if (process.env.NODE_ENV === 'development') {
-    domain = "localhost:8000";
+    // domain = "localhost:8000";
+}
+
+function Loading() {
+    return <h2>Fetching Results</h2>;
 }
 
 function Result({result, index}) {
@@ -40,6 +45,7 @@ export default function SearchResults() {
     const [query, setQuery] = useState("");
     const [results, setResults] = useState([]);
     const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const newQuery = async () => {
 
@@ -49,6 +55,7 @@ export default function SearchResults() {
             return;
         }
 
+        setIsLoading(true);
         try {
             const url = "https://" + domain + "/q2?query=" + encodeURIComponent(query);
             const response = await fetch(url);
@@ -61,7 +68,9 @@ export default function SearchResults() {
             setError(null);
         } catch (error) {
             console.error("Error fetching data:", error);
-        } 
+        } finally {
+            setIsLoading(false);
+        }
     };
     return (
         <div>
@@ -72,9 +81,15 @@ export default function SearchResults() {
                         value = {query}
                         onChange={(e) => setQuery(e.target.value)} 
                         placeholder="Enter your query"
-                        autocomplete="off" />
+                        autoComplete="off" />
                 <button onClick={newQuery} id="searchButton"> Search </button>
             </div>
+
+            {isLoading && (
+                <div style={{ marginTop: "10px" }}>
+                    <ClipLoader color="black" size={35} />
+                </div>
+            )}
 
             {/* Error Message */}
             {error && <p style={{ color: "red" }}>{error}</p>}
@@ -86,7 +101,7 @@ export default function SearchResults() {
                     <Result result={result} index={index}/>
                 ))
                 ) : (
-                <p>No results to display</p>
+                    !isLoading && <p>No results to display</p>
                 )}
             </div>
         </div>
