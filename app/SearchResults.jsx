@@ -71,7 +71,8 @@ export default function SearchResults() {
                         id="searchInput" 
                         value = {query}
                         onChange={(e) => setQuery(e.target.value)} 
-                        placeholder="Enter your query" />
+                        placeholder="Enter your query"
+                        autocomplete="off" />
                 <button onClick={newQuery} id="searchButton"> Search </button>
             </div>
 
