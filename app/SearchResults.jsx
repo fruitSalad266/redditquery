@@ -2,6 +2,11 @@
 
 import { useState } from "react";
 
+var domain = "jstest2.onrender.com";
+if (process.env.NODE_ENV === 'development') {
+    domain = "localhost:8000";
+}
+
 function Result({result, index}) {
     const n = result.nsfw;
     return (
@@ -45,7 +50,7 @@ export default function SearchResults() {
         }
 
         try {
-            const url = "https://reddit-backend-dle4.onrender.com/q2?query=" + encodeURIComponent(query);
+            const url = "https://" + domain + "/q2?query=" + encodeURIComponent(query);
             const response = await fetch(url);
             if(!response.ok) {
                 throw new Error(`HTTP error, status: ${response.status}`);
