@@ -25,7 +25,7 @@ export default function GridBackground() {
 
         const gridSize = 50;
         const dots = [];
-        const mouseInfluence = 300; // Much larger influence radius
+        const mouseInfluence = 300; 
 
         for (let x = 0; x < width; x += gridSize) {
             for (let y = 0; y < height; y += gridSize) {

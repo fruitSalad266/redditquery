@@ -14,17 +14,60 @@ function Loading() {
 
 function Result({result, index}) {
     const n = result.nsfw;
+    
+    // Format the UTC timestamp to a readable date
+    const formatDate = (utcTimestamp) => {
+        if (!utcTimestamp) return 'Unknown';
+        const date = new Date(utcTimestamp * 1000); // Convert from Unix timestamp
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+        
+        if (diffMins < 60) return `${diffMins}m ago`;
+        if (diffHours < 24) return `${diffHours}h ago`;
+        if (diffDays < 7) return `${diffDays}d ago`;
+        return date.toLocaleDateString();
+    };
+    
+    // Format upvotes with K/M notation
+    const formatUpvotes = (ups) => {
+        if (!ups && ups !== 0) return '0';
+        if (ups >= 1000000) return `${(ups / 1000000).toFixed(1)}M`;
+        if (ups >= 1000) return `${(ups / 1000).toFixed(1)}K`;
+        return ups.toString();
+    };
+    
     return (
         <div>
         {n ? (
             <section key={index} className="nsfwSection" style={{marginBottom: "16px", textAlign: "left"}}>
                 <p style={{fontWeight: "700", fontSize: "0.875rem", marginBottom: "8px"}}>⚠️ NSFW</p>
+                <div style={{display: "flex", gap: "12px", alignItems: "center", marginBottom: "6px"}}>
+                    <span style={{fontSize: "0.75rem", color: "#9ca3af", fontWeight: "500"}}>
+                        {formatUpvotes(result.ups)} upvotes
+                    </span>
+                    <span style={{fontSize: "0.75rem", color: "#9ca3af"}}>•</span>
+                    <span style={{fontSize: "0.75rem", color: "#9ca3af"}}>
+                        {formatDate(result.created)}
+                    </span>
+                </div>
                 <p style={{fontSize: "0.875rem", color: "#fca5a5", marginBottom: "8px"}}>{result.sr}</p>
                 <h3 style={{fontSize: "1.125rem", fontWeight: "600", marginBottom: "12px", color: "#fecaca"}}>{result.title}</h3>
                 <a href={result.link} target="_blank" rel="noopener noreferrer" style={{color: "#fca5a5", fontWeight: "600"}}>View Post →</a>
             </section>
         ) : (
             <section key={index} style={{marginBottom: "16px", textAlign: "left"}}>
+                <div style={{display: "flex", gap: "12px", alignItems: "center", marginBottom: "6px"}}>
+                    <span style={{fontSize: "0.75rem", color: "#6b7280", fontWeight: "500"}}>
+                        {formatUpvotes(result.ups)} upvotes
+                    </span>
+                    <span style={{fontSize: "0.75rem", color: "#6b7280"}}>•</span>
+                    <span style={{fontSize: "0.75rem", color: "#6b7280"}}>
+                        {formatDate(result.created)}
+                    </span>
+                </div>
                 <p style={{fontSize: "0.875rem", color: "#94a3b8", marginBottom: "8px", fontWeight: "500"}}>{result.sr}</p>
                 <h3 style={{fontSize: "1.125rem", fontWeight: "600", marginBottom: "12px", color: "#e2e8f0"}}>{result.title}</h3>
                 <a href={result.link} target="_blank" rel="noopener noreferrer" style={{fontWeight: "600"}}>View Post →</a>
@@ -39,6 +82,7 @@ export default function SearchResults() {
     const [results, setResults] = useState([]);
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [hideNSFW, setHideNSFW] = useState(false);
 
     const newQuery = async () => {
 
@@ -65,9 +109,12 @@ export default function SearchResults() {
             setIsLoading(false);
         }
     };
+    
+    // Filter results based on NSFW preference
+    const filteredResults = hideNSFW ? results.filter(result => !result.nsfw) : results;
+
     return (
         <div style={{width: "100%"}}>
-        {/* Input and Button (assumes these are in the same component) */}
             <div style={{width: "100%", display: "flex", justifyContent: "center", gap: "10px", flexWrap: "wrap"}}>
                 <input type="text" 
                         id="searchInput" 
@@ -78,6 +125,31 @@ export default function SearchResults() {
                         autoComplete="off" />
                 <button onClick={newQuery} id="searchButton">Search</button>
             </div>
+
+            {/* NSFW Filter Toggle */}
+            {results.length > 0 && (
+                <div style={{marginTop: "16px", display: "flex", justifyContent: "center"}}>
+                    <button 
+                        onClick={() => setHideNSFW(!hideNSFW)}
+                        style={{
+                            padding: "8px 16px",
+                            fontSize: "0.875rem",
+                            borderRadius: "8px",
+                            border: hideNSFW ? "2px solid #818cf8" : "2px solid #2a2a2a",
+                            background: hideNSFW ? "rgba(129, 140, 248, 0.2)" : "transparent",
+                            color: hideNSFW ? "#a5b4fc" : "#94a3b8",
+                            cursor: "pointer",
+                            transition: "all 0.2s ease",
+                            fontWeight: "500",
+                            height: "auto",
+                            width: "auto",
+                            margin: "0"
+                        }}
+                    >
+                        {hideNSFW ? "✓ NSFW Hidden" : "Hide NSFW"}
+                    </button>
+                </div>
+            )}
 
             {isLoading && (
                 <div style={{ marginTop: "20px", display: "flex", justifyContent: "center", alignItems: "center" }}>
@@ -90,10 +162,12 @@ export default function SearchResults() {
 
             {/* Results Section */}
             <div style={{marginTop: "24px"}}>
-                {results.length > 0 ? (
-                results.map((result, index) => (
+                {filteredResults.length > 0 ? (
+                filteredResults.map((result, index) => (
                     <Result result={result} index={index} key={index}/>
                 ))
+                ) : results.length > 0 && hideNSFW ? (
+                    <p style={{color: "#94a3b8", marginTop: "16px"}}>All results are NSFW. Toggle filter to view.</p>
                 ) : (
                     !isLoading && <p style={{color: "#94a3b8", marginTop: "16px"}}>No results to display</p>
                 )}
