@@ -83,6 +83,7 @@ export default function SearchResults() {
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [hideNSFW, setHideNSFW] = useState(false);
+    const [sortOrder, setSortOrder] = useState('none'); // 'none', 'asc', 'desc'
 
     const newQuery = async () => {
 
@@ -111,7 +112,21 @@ export default function SearchResults() {
     };
     
     // Filter results based on NSFW preference
-    const filteredResults = hideNSFW ? results.filter(result => !result.nsfw) : results;
+    let filteredResults = hideNSFW ? results.filter(result => !result.nsfw) : results;
+    
+    // Sort results based on upvotes
+    if (sortOrder === 'asc') {
+        filteredResults = [...filteredResults].sort((a, b) => (a.ups || 0) - (b.ups || 0));
+    } else if (sortOrder === 'desc') {
+        filteredResults = [...filteredResults].sort((a, b) => (b.ups || 0) - (a.ups || 0));
+    }
+    
+    // Cycle through sort options
+    const cycleSortOrder = () => {
+        if (sortOrder === 'none') setSortOrder('desc');
+        else if (sortOrder === 'desc') setSortOrder('asc');
+        else setSortOrder('none');
+    };
 
     return (
         <div style={{width: "100%"}}>
@@ -126,30 +141,50 @@ export default function SearchResults() {
                 <button onClick={newQuery} id="searchButton">Search</button>
             </div>
 
-            {/* NSFW Filter Toggle */}
-            {results.length > 0 && (
-                <div style={{marginTop: "16px", display: "flex", justifyContent: "center"}}>
-                    <button 
-                        onClick={() => setHideNSFW(!hideNSFW)}
-                        style={{
-                            padding: "8px 16px",
-                            fontSize: "0.875rem",
-                            borderRadius: "8px",
-                            border: hideNSFW ? "2px solid #818cf8" : "2px solid #2a2a2a",
-                            background: hideNSFW ? "rgba(129, 140, 248, 0.2)" : "transparent",
-                            color: hideNSFW ? "#a5b4fc" : "#94a3b8",
-                            cursor: "pointer",
-                            transition: "all 0.2s ease",
-                            fontWeight: "500",
-                            height: "auto",
-                            width: "auto",
-                            margin: "0"
-                        }}
-                    >
-                        {hideNSFW ? "✓ NSFW Hidden" : "Hide NSFW"}
-                    </button>
-                </div>
-            )}
+            {/* Filter and Sort Controls */}
+            <div style={{marginTop: "16px", display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap"}}>
+                <button 
+                    onClick={() => setHideNSFW(!hideNSFW)}
+                    style={{
+                        padding: "8px 16px",
+                        fontSize: "0.875rem",
+                        borderRadius: "8px",
+                        border: hideNSFW ? "2px solid #818cf8" : "2px solid #2a2a2a",
+                        background: hideNSFW ? "rgba(129, 140, 248, 0.2)" : "transparent",
+                        color: hideNSFW ? "#a5b4fc" : "#94a3b8",
+                        cursor: "pointer",
+                        transition: "all 0.2s ease",
+                        fontWeight: "500",
+                        height: "auto",
+                        width: "auto",
+                        margin: "0"
+                    }}
+                >
+                    {hideNSFW ? "✓ NSFW Hidden" : "Hide NSFW"}
+                </button>
+                
+                <button 
+                    onClick={cycleSortOrder}
+                    style={{
+                        padding: "8px 16px",
+                        fontSize: "0.875rem",
+                        borderRadius: "8px",
+                        border: sortOrder !== 'none' ? "2px solid #818cf8" : "2px solid #2a2a2a",
+                        background: sortOrder !== 'none' ? "rgba(129, 140, 248, 0.2)" : "transparent",
+                        color: sortOrder !== 'none' ? "#a5b4fc" : "#94a3b8",
+                        cursor: "pointer",
+                        transition: "all 0.2s ease",
+                        fontWeight: "500",
+                        height: "auto",
+                        width: "auto",
+                        margin: "0"
+                    }}
+                >
+                    {sortOrder === 'none' && "Sort by Upvotes"}
+                    {sortOrder === 'desc' && "↓ Most Upvoted"}
+                    {sortOrder === 'asc' && "↑ Least Upvoted"}
+                </button>
+            </div>
 
             {isLoading && (
                 <div style={{ marginTop: "20px", display: "flex", justifyContent: "center", alignItems: "center" }}>
