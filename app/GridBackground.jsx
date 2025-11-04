@@ -40,7 +40,6 @@ export default function GridBackground() {
             }
         }
 
-        // Mouse move handler
         const handleMouseMove = (e) => {
             mouseRef.current = {
                 x: e.clientX,
@@ -48,7 +47,6 @@ export default function GridBackground() {
             };
         };
 
-        // Animation function
         const animate = () => {
             ctx.fillStyle = '#000000';
             ctx.fillRect(0, 0, width, height);
@@ -69,18 +67,15 @@ export default function GridBackground() {
                 // Apply spring force back to original position
                 const backDx = dot.originalX - dot.x;
                 const backDy = dot.originalY - dot.y;
-                dot.vx += backDx * 0.008;
-                dot.vy += backDy * 0.008;
+                dot.vx += backDx * 0.06;
+                dot.vy += backDy * 0.06;
 
-                // Apply damping (lower = more friction)
-                dot.vx *= 0.88;
-                dot.vy *= 0.88;
+                dot.vx *= 0.80;
+                dot.vy *= 0.80;
 
-                // Update position
                 dot.x += dot.vx;
                 dot.y += dot.vy;
 
-                // Draw dot
                 const dotDistance = Math.sqrt(
                     (mouse.x - dot.x) ** 2 + (mouse.y - dot.y) ** 2
                 );
